@@ -11,7 +11,6 @@ protected:
 	Vector2 barrelDir;
 	Color tint;
 public:
-	bool active;
 	Tank();
 	Tank(Texture2D* _body, Texture2D* _hub, Texture2D* _barrel, Vector2 _start, Color _tint);
 	~Tank();

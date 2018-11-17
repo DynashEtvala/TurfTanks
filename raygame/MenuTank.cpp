@@ -17,10 +17,6 @@ void MenuTank::Update(float delta_t)
 {
 	centerPos.x--;
 	centerPos.y -= spd * delta_t;
-	if (centerPos.x < -60 || centerPos.y < -60)
-	{
-		active = false;
-	}
 }
 
 
@@ -34,7 +30,6 @@ void MenuTank::Draw(float delta_t)
 
 void MenuTank::Initialize(Vector2 _pos, float _spd, Color _tint)
 {
-	active = true;
 	centerPos = _pos;
 	spd = _spd;
 	body.tint = _tint;

@@ -19,8 +19,15 @@ void MenuTankFactory::Initialize(Texture2D* _body, Texture2D* _barrel, Texture2D
 	body = _body;
 	barrel = _barrel;
 	hub = _hub;
-	tanks.push_back(MenuTank{ body, barrel, hub });
-	tanks.back().Initialize(Vector2{ (float)(GetRandomValue(200, 1600)), (float)(GetScreenHeight()) + 60 }, (float)(GetRandomValue(50, 100)), colors[GetRandomValue(0, 5)]);
+	total = 1;
+	freeCount = total;
+	usedCount = 0;
+	free = new MenuTank*[total];
+	used = new MenuTank*[total];
+	for (int i = 0; i < freeCount; i++)
+	{
+		free[i] = new MenuTank{ _body, _barrel, _hub };
+	}
 }
 
 
@@ -39,29 +46,22 @@ void MenuTankFactory::Update(float delta_t)
 	}
 	else
 	{
-		for (auto iter = tanks.begin(); iter != tanks.end(); iter++)
+		if (usedCount < total)
 		{
-			if (!iter->active)
+			used[usedCount] = free[0];
+			for (int i = 0; i < freeCount - 1; i++)
 			{
-				iter->Initialize(Vector2{ (float)(GetRandomValue(200, 1600)), (float)(GetScreenHeight()) + 60 }, (float)(GetRandomValue(50, 100)), colors[GetRandomValue(0, 5)]);
-				break;
+				free[i] = free[i + 1];
 			}
-			if ((iter + 1) == tanks.end())
-			{
-				tanks.push_back(MenuTank{body, barrel, hub});
-				tanks.back().Initialize(Vector2{ (float)(GetRandomValue(200, 1600)), (float)(GetScreenHeight()) + 60 }, (float)(GetRandomValue(50, 100)), colors[GetRandomValue(0, 5)]);
-				break;
-			}
+		}
+		else
+		{
+			MenuTank** tempF = new MenuTank*[total * 2];
+
 		}
 		spawnTimer -= 1;
 	}
-	for (auto iter = tanks.begin(); iter != tanks.end(); iter++)
-	{
-		if (iter->active)
-		{
-			iter->Update(delta_t);
-		}
-	}
+
 }
 
 

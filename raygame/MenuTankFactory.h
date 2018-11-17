@@ -7,7 +7,11 @@ private:
 	MenuTankFactory();
 	MenuTankFactory(MenuTankFactory const&);
 	void operator=(MenuTankFactory const&);
-	std::vector<MenuTank> tanks;
+	MenuTank** free;
+	MenuTank** used;
+	size_t freeCount;
+	size_t usedCount;
+	size_t total;
 	float spawnTimer = 0;
 	Color colors[6] = { {255, 0, 0, 255}, { 255, 255, 0, 255 }, { 0, 255, 0, 255 }, { 0, 255, 255, 255 }, { 0, 0, 255, 255 }, { 255, 0, 255, 255 } };
 	Texture2D* body;
