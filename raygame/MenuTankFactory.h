@@ -13,7 +13,7 @@ private:
 	size_t usedCount;
 	size_t total;
 	float spawnTimer = 0;
-	Color colors[6] = { {255, 0, 0, 255}, { 255, 255, 0, 255 }, { 0, 255, 0, 255 }, { 0, 255, 255, 255 }, { 0, 0, 255, 255 }, { 255, 0, 255, 255 } };
+	Color colors[6] = { Color{255, 0, 0, 255}, Color{ 255, 255, 0, 255 }, Color{ 0, 255, 0, 255 }, Color{ 0, 255, 255, 255 }, Color{ 0, 0, 255, 255 }, Color{ 255, 0, 255, 255 } };
 	Texture2D* body;
 	Texture2D* barrel;
 	Texture2D* hub;

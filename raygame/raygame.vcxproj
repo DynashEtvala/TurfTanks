@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="MenuTank.cpp" />
     <ClCompile Include="MenuTankFactory.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -142,6 +143,7 @@
   <ItemGroup>
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="MainMenu.h" />
     <ClInclude Include="MenuTank.h" />
     <ClInclude Include="MenuTankFactory.h" />
     <ClInclude Include="Sprite.h" />

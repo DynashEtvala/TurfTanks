@@ -13,6 +13,7 @@
 #include "GameState.h"
 #include "Sprite.h"
 #include "MenuTankFactory.h"
+#include "MainMenu.h"
 
 int main()
 {
@@ -20,6 +21,9 @@ int main()
 	//--------------------------------------------------------------------------------------
 	int screenWidth = 1300;
 	int screenHeight = 800;
+
+	bool exit = false;
+
 	//ShowLogo();
 	InitWindow(screenWidth, screenHeight, "Turf Tanks");
 	HideCursor();
@@ -35,11 +39,19 @@ int main()
 
 	Texture2D* groundTex = new Texture2D(LoadTexture("sprites/ground.png"));
 
+	Texture2D* buttonTex = new Texture2D(LoadTexture("sprites/button.png"));
+	Texture2D* tokenTex = new Texture2D(LoadTexture("sprites/playerToken.png"));
+	Texture2D* panelTex = new Texture2D(LoadTexture("sprites/panel.png"));
+
 	MenuTankFactory::GetInstance().Initialize(tBodyTex, tBarrelTex, tHubTex);
 
 	Tank test = { tBodyTex, tHubTex, tBarrelTex, {500, 500}, WHITE };
 
+	Color playerColors[4] = { RED, BLUE, GREEN, YELLOW };
+
 	int controlPlayer = 0;
+
+	MainMenu mainMenu;
 	
 	Sprite menuBG = Sprite{ groundTex, Point{ 0, 0 }, Point{ groundTex->width * 28, groundTex->height * 16 }, Vector2{ 0, 0 }, 50.0f / 128.0f, WHITE, Point{ 1, 1}, 0, Vector2{ 0, 0}, 0 };
 
@@ -47,7 +59,7 @@ int main()
 	//--------------------------------------------------------------------------------------
 
 	// Main game loop
-	while (!WindowShouldClose())    // Detect window close button or ESC key
+	while (!WindowShouldClose() && !exit)    // Detect window close button or ESC key
 	{
 		// Update
 		//----------------------------------------------------------------------------------
@@ -64,7 +76,7 @@ int main()
 			{
 				if (IsGamepadButtonReleased(i, GAMEPAD_XBOX_BUTTON_START))
 				{
-					GameState::setState(MainMenu);
+					GameState::setState(Menu);
 					controlPlayer = i;
 				}
 			}
@@ -75,7 +87,23 @@ int main()
 			}
 			MenuTankFactory::GetInstance().Update(delta_t);
 			break;
-		case MainMenu:
+		case Menu:
+			if (IsGamepadButtonReleased(controlPlayer, GAMEPAD_XBOX_BUTTON_A))
+			{
+				GameState::setState(mainMenu.GetCur()->state);
+			}
+			else if (IsGamepadButtonReleased(controlPlayer, GAMEPAD_XBOX_BUTTON_B))
+			{
+				GameState::setState(Splash);
+			}
+			else if (IsGamepadButtonReleased(controlPlayer, GAMEPAD_XBOX_BUTTON_DOWN))
+			{
+				mainMenu.MoveBelow();
+			}
+			else if (IsGamepadButtonReleased(controlPlayer, GAMEPAD_XBOX_BUTTON_UP))
+			{
+				mainMenu.MoveAbove();
+			}
 			menuBG.pos.x--;
 			if (menuBG.pos.x < -50)
 			{
@@ -83,6 +111,10 @@ int main()
 			}
 			break;
 		case Options:
+			if (IsGamepadButtonReleased(controlPlayer, GAMEPAD_XBOX_BUTTON_B))
+			{
+				GameState::setState(Menu);
+			}
 			menuBG.pos.x--;
 			if (menuBG.pos.x < -50)
 			{
@@ -90,6 +122,11 @@ int main()
 			}
 			break;
 		case PlayerSelect:
+			if (IsGamepadButtonReleased(controlPlayer, GAMEPAD_XBOX_BUTTON_B))
+			{
+				GameState::setState(Menu);
+			}
+			
 			menuBG.pos.x--;
 			if (menuBG.pos.x < -50)
 			{
@@ -97,6 +134,10 @@ int main()
 			}
 			break;
 		case MapSelect:
+			if (IsGamepadButtonReleased(controlPlayer, GAMEPAD_XBOX_BUTTON_B))
+			{
+				GameState::setState(PlayerSelect);
+			}
 			menuBG.pos.x--;
 			if (menuBG.pos.x < -50)
 			{
@@ -106,6 +147,9 @@ int main()
 		case InGame:
 			break;
 		case GameOver:
+			break;
+		case Exit:
+			exit = true;
 			break;
 		}
 
@@ -124,15 +168,30 @@ int main()
 			DrawText("PRESS START", screenWidth / 2 - MeasureText("PRESS START", 50) / 2, 700, 50, Color{ 0, 0, 0, (unsigned char)(((int)GetTime() % 2) * 255) });
 			DrawText("Turf Tanks", screenWidth / 2 - MeasureText("Turf Tanks", 100) / 2, 100, 100, Color{ 20, 127, 20, 255 });
 			break;
-		case MainMenu:
+		case Menu:
 			menuBG.Draw(delta_t);
 			DrawText("Turf Tanks", screenWidth / 2 - MeasureText("Turf Tanks", 100) / 2, 100, 100, Color{ 20, 127, 20, 255 });
+			//current menu button
+			DrawTexturePro(*buttonTex, Rectangle{ 0, 0, (float)(buttonTex->width), (float)(buttonTex->height) }, Rectangle{ (float)(screenWidth / 2 - MeasureText(mainMenu.GetCur()->text.c_str(), 40) / 2 - 10), 490, (float)(MeasureText(mainMenu.GetCur()->text.c_str(), 40) + 20), 60 }, Vector2{ 0, 0 }, 0, Color{ 20, 127, 20, 128 });
+			DrawText(mainMenu.GetCur()->text.c_str(), screenWidth / 2 - MeasureText(mainMenu.GetCur()->text.c_str(), 40) / 2, 500, 40, BLACK);
+			//above menu button
+			DrawTexturePro(*buttonTex, Rectangle{ 0, 0, (float)(buttonTex->width), (float)(buttonTex->height) }, Rectangle{ (float)(screenWidth / 2 - MeasureText(mainMenu.GetCur()->above->text.c_str(), 20) / 2 - 5), 450, (float)(MeasureText(mainMenu.GetCur()->above->text.c_str(), 20) + 10), 30 }, Vector2{ 0, 0}, 0, Color{ 20, 127, 20, 128 });
+			DrawText(mainMenu.GetCur()->above->text.c_str(), screenWidth / 2 - MeasureText(mainMenu.GetCur()->above->text.c_str(), 20) / 2, 455, 20, BLACK);
+			//below menu button
+			DrawTexturePro(*buttonTex, Rectangle{ 0, 0, (float)(buttonTex->width), (float)(buttonTex->height) }, Rectangle{ (float)(screenWidth / 2 - MeasureText(mainMenu.GetCur()->below->text.c_str(), 20) / 2 - 5), 560, (float)(MeasureText(mainMenu.GetCur()->below->text.c_str(), 20) + 10), 30 }, Vector2{ 0, 0 }, 0, Color{ 20, 127, 20, 128 });
+			DrawText(mainMenu.GetCur()->below->text.c_str(), screenWidth / 2 - MeasureText(mainMenu.GetCur()->below->text.c_str(), 20) / 2, 565, 20, BLACK);
 			break;
 		case Options:
+			menuBG.Draw(delta_t);
 			break;
 		case PlayerSelect:
+			menuBG.Draw(delta_t);
+			DrawTexturePro(*panelTex, Rectangle{ 0, 0, (float)(panelTex->width), (float)(panelTex->height) }, Rectangle{ 450, 300, 150, 400 }, Vector2{ 0, 0 }, 0, GREEN);
+			DrawTexturePro(*panelTex, Rectangle{ 0, 0, (float)(panelTex->width), (float)(panelTex->height) }, Rectangle{ 625, 300, 50, 400 }, Vector2{ 0, 0 }, 0, WHITE);
+			DrawTexturePro(*panelTex, Rectangle{ 0, 0, (float)(panelTex->width), (float)(panelTex->height) }, Rectangle{ 700, 300, 150, 400 }, Vector2{ 0, 0 }, 0, PINK);
 			break;
 		case MapSelect:
+			menuBG.Draw(delta_t);
 			break;
 		case InGame:
 			break;
@@ -151,6 +210,9 @@ int main()
 	delete tHubTex;
 	delete bulletTex;
 	delete groundTex;
+	delete buttonTex;
+	delete panelTex;
+	delete tokenTex;
 	CloseWindow();        // Close window and OpenGL context
 	//--------------------------------------------------------------------------------------
 

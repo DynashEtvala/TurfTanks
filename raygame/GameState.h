@@ -1,6 +1,6 @@
 #pragma once
 
-enum GState { Splash = 0, MainMenu, PlayerSelect, MapSelect, InGame, GameOver, Options };
+enum GState { Splash = 0, Menu, PlayerSelect, MapSelect, InGame, GameOver, Options, Exit };
 
 class GameState
 {
